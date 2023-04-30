@@ -1,6 +1,9 @@
 package com.example.application.views.list;
 
+import java.util.Collections;
+
 import com.example.application.data.entity.Contact;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -15,13 +18,15 @@ import com.vaadin.flow.router.Route;
 public class ListView extends VerticalLayout {
     private final Grid<Contact> grid = new Grid<>(Contact.class);
     private final TextField filterText = new TextField();
+    private ContactForm form;
 
     public ListView() {
         addClassName("list-view");
         setSizeFull();
         configureGrid();
+        configureForm();
 
-        add(getToolbar(), grid);
+        add(getToolbar(), getContent());
     }
 
     private void configureGrid() {
@@ -33,7 +38,25 @@ public class ListView extends VerticalLayout {
         grid.getColumns().forEach(col -> col.setAutoWidth(true));
     }
 
-    private HorizontalLayout getToolbar() {
+    private void configureForm() {
+        form = new ContactForm(Collections.emptyList(), Collections.emptyList());
+
+        form.setWidth("25em");
+    }
+
+    private Component getContent() {
+        final var content = new HorizontalLayout(grid, form);
+
+        content.setFlexGrow(2, grid);
+        content.setFlexGrow(1, form);
+
+        content.addClassNames("content");
+        content.setSizeFull();
+
+        return content;
+    }
+
+    private Component getToolbar() {
         filterText.setPlaceholder("Filter by name...");
         filterText.setClearButtonVisible(true);
         filterText.setValueChangeMode(ValueChangeMode.LAZY);
